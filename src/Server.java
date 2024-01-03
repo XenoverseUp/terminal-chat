@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -13,10 +14,30 @@ public class Server {
             while (!serverSocket.isClosed()) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("A new client is connected.");
+
+                ClientHandler clientHandler = new ClientHandler(clientSocket);
+
+                Thread thread = new Thread(clientHandler);
+                thread.start();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
         }
 
     }
-    
+
+    public void closeServerSocket() {
+        try {
+            if (serverSocket != null) serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(1234);
+        Server server = new Server(serverSocket);
+        server.startServer();
+    }
+
 }
